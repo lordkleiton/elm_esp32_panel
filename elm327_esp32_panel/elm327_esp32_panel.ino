@@ -68,9 +68,9 @@ void setup()
   setupELM();
 }
 
-void handleState(float value, float* variable, obd_pid_states nextState)
+void handleState(float value, float& variable, obd_pid_states nextState)
 {
-  *variable = value;
+  variable = value;
 
   if (myELM327.nb_rx_state == ELM_SUCCESS)
   {
@@ -110,19 +110,19 @@ void getObdInfo()
   {
     case ENG_RPM:
     {
-      handleState(myELM327.rpm(), &rpm, SPEED);
+      handleState(myELM327.rpm(), rpm, SPEED);
       
       break;
     }
     case SPEED:
     {
-      handleState(myELM327.mph(), &mph, TEMP);
+      handleState(myELM327.mph(), mph, TEMP);
       
       break;
     }
     case TEMP:
     {
-      handleState(myELM327.engineCoolantTemp(), &temp, ENG_RPM);
+      handleState(myELM327.engineCoolantTemp(), temp, ENG_RPM);
 
       break;
     }

@@ -68,18 +68,16 @@ void setup()
   setupELM();
 }
 
-void handleState(float value, char* title, obd_pid_states nextState)
+void handleState(float value, float* variable, obd_pid_states nextState)
 {
+  *variable = value;
+
   if (myELM327.nb_rx_state == ELM_SUCCESS)
   {
-    // Serial.print(title);
-    // Serial.print(":");
-    // Serial.println(value);
     obd_state = nextState;
   }
   else if (myELM327.nb_rx_state != ELM_GETTING_MSG)
   {
-    // myELM327.printError();
     obd_state = nextState;
   }
 }
@@ -106,35 +104,34 @@ void drawScreen()
   display.display();
 }
 
-void loop()
+void getObdInfo()
 {
-  drawScreen();
-
   switch (obd_state)
   {
     case ENG_RPM:
     {
-      rpm = myELM327.rpm();
-
-      handleState(rpm, "rpm", SPEED);
+      handleState(myELM327.rpm(), &rpm, SPEED);
       
       break;
     }
     case SPEED:
     {
-      mph = myELM327.mph();
-
-      handleState(mph, "mph", TEMP);
+      handleState(myELM327.mph(), &mph, TEMP);
       
       break;
     }
     case TEMP:
     {
-      temp = myELM327.engineCoolantTemp();
-
-      handleState(temp, "temp", ENG_RPM);
+      handleState(myELM327.engineCoolantTemp(), &temp, ENG_RPM);
 
       break;
     }
   }
+}
+
+void loop()
+{
+  drawScreen();
+
+  getObdInfo();
 }
